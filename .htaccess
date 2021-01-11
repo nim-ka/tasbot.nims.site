@@ -1,0 +1,22 @@
+AddHandler cgi-script .cgi
+
+ErrorDocument 404 /404
+
+RewriteEngine On 
+
+RewriteRule ^.git/ - [L,R=404]
+
+RewriteCond %{REQUEST_FILENAME} !-f 
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}\.cgi -f 
+RewriteRule ^(.*)$ $1.cgi
+
+RewriteCond %{REQUEST_FILENAME} !-f 
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}\.html -f 
+RewriteRule ^(.*)$ $1.html
+
+RewriteCond %{REQUEST_FILENAME} !-f 
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}\.json -f 
+RewriteRule ^(.*)$ $1.json

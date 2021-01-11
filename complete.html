@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title> Console Verification Queue </title>
+
+		<link rel="stylesheet" href="/assets/css/style.css" />
+
+		<script src="/assets/js/site"></script>
+
+		<script>
+			function onLoad () {
+				let params = new URLSearchParams(location.search);
+
+				utils.unhideDiv(params.get("res"));
+
+				utils.setText("pos", params.get("pos"));
+				utils.setText("id", params.get("id"));
+
+				if (params.get("pos") == 1) {
+					utils.unhideDiv("first");
+				}
+
+				utils.unhideDiv("sitebody");
+			}
+		</script>
+	</head>
+	<body onload="onLoad()">
+		<div id="content" class="content everywhere">
+			<div class="banner">
+				<div class="dummy"></div>
+				<div class="headertext"> Console Verification Queue </div>
+				<div class="navbar">
+					<a href="/"> <button> <b> Main Page </b> </button> </a>
+					&nbsp; &nbsp;
+					<a href="/manage"> <button> <b> Manage TAS </b> </button> </a>
+				</div>
+			</div>
+			<div id="sitebody" class="sitebody hide">
+				<div id="success" class="regulartext hide">
+					<span> Congratulations! Your TAS has been uploaded. </span> <br /> <br />
+					<span> Your TAS is currently #<b id="pos">unknown</b> in the queue. </span> <br />
+					<div id="first" class="hide"> It should begin playing any moment now! <br /> </div>
+					<span> Your TAS's ID is <b id="id">unknown</b>. </span> <br /> <br />
+					<span> If you ever want to check or manage its position in the queue, enter the ID on the Manage TAS page. </span> <br />
+					<span> <i> If you lose the ID, you will have no way to check or manage your TAS in the queue! </i> </span>
+				</div>
+				<div id="invalid" class="regulartext hide">
+					<span> Your TAS has failed to upload; <b>it appears to be invalid.</b> </span> <br /> <br />
+					<span> Please check that you uploaded a valid .m64 file. </span> <br />
+					<span> TASes must start from game boot and only use 1 controller. </span>
+				</div>
+				<div id="toolarge" class="regulartext hide">
+					<span> Your TAS has failed to upload; <b>it appears to be too large.</b> </span> <br /> <br />
+					<span> Please check that you uploaded a valid .m64 file that is under the length limit of 4 hours. </span>
+				</div>
+				<br />
+				<button onclick="location.href='/'"> <b> Go back </b> </button>
+			</div>
+		</div>
+	</body>
+</html>

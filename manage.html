@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title> Console Verification Queue </title>
+
+		<link rel="stylesheet" href="/assets/css/style.css" />
+
+		<style>
+			input {
+				font: inherit;
+			}
+
+			#error {
+				color: red;
+			}
+
+			.loading {
+				display: flex;
+				justify-content: center;
+				align-items: center;
+			}
+
+
+			@keyframes loadanim {
+				0% { opacity: 25%; }
+				25% { opacity: 100%; }
+				50% { opacity: 25%; }
+				100% { opacity: 25%; }
+			}
+
+			[id^="loadcircle"] {
+				width: 1em;
+				height: 1em;
+
+				border-radius: 50%;
+
+				background: white;
+
+				opacity: 25%;
+				animation: 2s loadanim infinite;
+			}
+
+			#loadcircle1 {
+				animation-delay: 0s;
+			}
+
+			#loadcircle2 {
+				animation-delay: 0.27s;
+			}
+
+			#loadcircle3 {
+				animation-delay: 0.54s;
+			}
+
+			.loadspace {
+				width: 0.5em;
+			}
+		</style>
+
+		<script src="/assets/js/site"></script>
+
+		<script>
+			function doTASRequest (data, callback) {
+				utils.hideDiv("error");
+				utils.hideDiv("response");
+				utils.hideDiv("deletionMessage");
+				utils.unhideDiv("loadwrapper");
+
+				ajax.postJSON("/api/management", data, callback);
+			}
+
+			function loadTAS () {
+				doTASRequest({
+					action: "info",
+					id: document.getElementById("id").value
+				}, showStatus);
+			}
+
+			function showStatus (xhr, evt) {
+				utils.hideDiv("loadwrapper");
+
+				if (xhr.readyState == xhr.DONE) {
+					if (xhr.status == 200) {
+						for (let key in xhr.response) {
+							if (document.getElementById(key)) {
+								utils.setText(key, xhr.response[key]);
+							}
+						}
+
+						if (xhr.response.deleted) {
+							utils.unhideDiv("deletionMessage");
+						} else {
+							utils.unhideDiv("response");
+						}
+					} else if (xhr.status >= 400) {
+						if (xhr.response) {
+							console.error("API Error: " + xhr.response.errorMessage);
+							utils.setText("errorMessage", xhr.response.errorMessage);
+						} else {
+							utils.setText("errorMessage", xhr.status);
+						}
+
+						utils.unhideDiv("error");
+					}
+				}
+			}
+
+			function deleteTAS () {
+				if (!confirm("Are you sure you want to remove your TAS from the queue?")) {
+					return;
+				}
+
+				doTASRequest({
+					action: "delete",
+					id: document.getElementById("id").value
+				}, showStatus);
+			}
+		</script>
+	</head>
+	<body>
+		<div id="content" class="content everywhere">
+			<div class="banner">
+				<div class="dummy"></div>
+				<div class="headertext"> Console Verification Queue </div>
+				<div class="navbar">
+					<a href="/"> <button> <b> Main Page </b> </button> </a>
+					&nbsp; &nbsp;
+					<a href="/manage"> <button> <b> Manage TAS </b> </button> </a>
+				</div>
+			</div>
+			<div class="sitebody">
+				<div class="regulartext">
+					<span> Enter your TAS's ID here: </span>
+					<input id="id" type="text" placeholder="CTQcFhkSLywcLT4S" />
+					<button onclick="loadTAS()"> <b> Check TAS </b> </button>
+					<br /> <br />
+					<div id="error" class="hide">
+						<b> There was an error attempting to check your TAS. <br />
+						Did you enter the correct ID? <br />
+						<br />
+						Error Message: <span id="errorMessage">unknown</span> </b>
+					</div>
+					<div id="response" class="hide">
+						TAS Name: <b> <span id="filename"> unknown </span> </b> <br />
+						Position in queue: #<b><span id="queuePos">unknown</span></b> <br />
+						<br />
+						<b> <button id="delete" onclick="deleteTAS()"> Remove TAS from queue </button> </b>
+					</div>
+					<div id="deletionMessage" class="hide"> TAS "<b><span id="deletedFilename">unknown</span></b>" has been removed from the queue.</div>
+					<div id="loadwrapper" class="hide">
+						<div class="loading">
+							<div id="loadcircle1"> </div>
+							<div class="loadspace"> </div>
+							<div id="loadcircle2"> </div>
+							<div class="loadspace"> </div>
+							<div id="loadcircle3"> </div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

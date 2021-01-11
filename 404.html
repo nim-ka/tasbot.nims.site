@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title> 404 </title>
+
+		<link rel="stylesheet" href="/assets/css/style.css" />
+
+		<style>
+			@keyframes anim404_1 {
+				0% { font-size: 2em; letter-spacing: 0; }
+				50% { font-size: 4em; letter-spacing: 5; }
+				100% { font-size: 2em; letter-spacing: 0; }
+			}
+
+			@keyframes anim404_2 {
+				0% { transform: rotate(0deg); }
+				100% { transform: rotate(360deg); }
+			}
+
+			.text404 {
+				display: inline-block;
+				animation: anim404_1 3s infinite, anim404_2 3s ease-in-out infinite;
+			}
+		</style>
+
+		<script src="/assets/js/site"></script>
+	</head>
+	<body>
+		<div class="content everywhere">
+			<div class="banner">
+				<div class="dummy"></div>
+				<div class="headertext"> 404 </div>
+				<div class="navbar">
+					<a href="/"> <button> <b> Main Page </b> </button> </a>
+					&nbsp; &nbsp;
+					<a href="/manage"> <button> <b> Manage TAS </b> </button> </a>
+				</div>
+			</div>
+			<div class="sitebody">
+				<div class="regulartext">
+					<span class="text404"> I screwed up </span>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

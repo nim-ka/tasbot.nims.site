@@ -1,0 +1,2 @@
+- add rate limiting
+- check that m64s arent duplicates of anything currently in queue

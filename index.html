@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title> Console Verification Queue </title>
+
+		<link rel="stylesheet" href="/assets/css/style.css" />
+
+		<style>
+			input {
+				position: absolute;
+				width: 0.1px;
+				height: 0.1px;
+
+				opacity: 0;
+				overflow: hidden;
+				z-index: -1;
+			}
+		</style>
+
+		<script src="/assets/js/site"></script>
+
+		<script>
+			function onLoad () {
+				let content = document.getElementById("content");
+				let form = document.getElementById("inputform");
+				let input = form.m64;
+
+				content.ondragover = content.ondragenter = (evt) => evt.preventDefault();
+
+				let inputHandler = () => {
+					if (input.files.length == 1) {
+						utils.unhideDiv("submit");
+						utils.setText("filename", input.files[0].name);
+					} else {
+						utils.hideDiv("submit");
+					}
+				};
+
+				content.ondrop = (evt) =>
+					((evt.dataTransfer.files.length == 1 ?
+						inputHandler(input.files = evt.dataTransfer.files) :
+						alert("Only one file may be uploaded at a time.")),
+					evt.preventDefault());
+
+				input.oninput = inputHandler;
+				input.onchange = inputHandler;
+			}
+		</script>
+	</head>
+	<body onload="onLoad()">
+		<div id="content" class="content everywhere">
+			<div class="banner">
+				<div class="dummy"></div>
+				<div class="headertext"> Console Verification Queue </div>
+				<div class="navbar">
+					<a href="/"> <button> <b> Main Page </b> </button> </a>
+					&nbsp; &nbsp;
+					<a href="/manage"> <button> <b> Manage TAS </b> </button> </a>
+				</div>
+			</div>
+			<div class="sitebody">
+				<div class="regulartext">
+					<form id="inputform" action="/upload" method="post" enctype="multipart/form-data">
+						<span> Drag and drop your .m64, or </span>
+						<input type="file" name="m64" id="m64" accept=".m64" />
+						<label for="m64" class="button"> <b> select a file. </b> </label>
+						<br /> <br />
+						<div id="submit" class="hide">
+							<span> Selected: <b> <span id="filename"> </span> </b> </span> <br />
+							<input type="submit" name="submit" />
+							<div class="smalldivider"> </div>
+							<button type="submit" form="inputform"> <b> Upload TAS </b> </label>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
