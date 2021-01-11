@@ -92,7 +92,7 @@ module.exports = (() => {
 		}
 
 		toString (categories) {
-			return categories ? JSON.stringify(Object.fromEntries(categories.split(",").map((cat) => [cat, this[cat]]))) : JSON.stringify(this);
+			return JSON.stringify(categories ? Object.fromEntries(categories.split(",").map((cat) => [cat, this[cat]])) : this);
 		}
 	};
 })();
