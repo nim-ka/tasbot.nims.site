@@ -5,6 +5,7 @@ ErrorDocument 404 /404
 RewriteEngine On 
 
 RewriteRule ^.git/ - [L,R=404]
+RewriteRule README.md - [L,R=404]
 
 RewriteCond %{REQUEST_FILENAME} !-f 
 RewriteCond %{REQUEST_FILENAME} !-d
