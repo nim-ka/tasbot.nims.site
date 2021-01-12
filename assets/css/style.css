@@ -58,6 +58,16 @@ body {
 	align-items: center;
 }
 
+.footer {
+	height: 2em;
+
+	display: flex;
+	justify-content: center;
+	align-items: center;
+
+	background: rgb(0, 150, 150);
+}
+
 .sitebody {
 	height: 25%;
 	margin: auto;
@@ -67,6 +77,10 @@ body {
 .regulartext {
 	font: 1em Verdana, sans-serif;
 	color: rgb(200, 200, 200);
+}
+
+a {
+	color: inherit;
 }
 
 button, .button {
