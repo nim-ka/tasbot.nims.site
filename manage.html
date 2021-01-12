@@ -4,7 +4,7 @@
 		<title> Console Verification Queue </title>
 
 		<link rel="stylesheet" href="/assets/css/style.css" />
-		<link rel="icon" href="/favicon.png" type="image/png" sizes="16x16 32x32 64x64 128x128" />
+		<link rel="icon" href="/favicon" type="image/png" sizes="16x16 32x32 64x64 128x128" />
 
 		<style>
 			input {
@@ -65,6 +65,7 @@
 				utils.hideDiv("error");
 				utils.hideDiv("response");
 				utils.hideDiv("deletionMessage");
+				utils.unhideDiv("deletewrapper");
 				utils.unhideDiv("loadwrapper");
 
 				ajax.postJSON("/api/management", data, callback);
@@ -86,6 +87,10 @@
 							if (document.getElementById(key)) {
 								utils.setText(key, xhr.response[key]);
 							}
+						}
+
+						if (xhr.response.queuePos == 1) {
+							utils.hideDiv("deletewrapper");
 						}
 
 						if (xhr.response.deleted) {
@@ -145,7 +150,9 @@
 						TAS Name: <b> <span id="filename"> unknown </span> </b> <br />
 						Position in queue: #<b><span id="queuePos">unknown</span></b> <br />
 						<br />
-						<b> <button id="delete" onclick="deleteTAS()"> Remove TAS from queue </button> </b>
+						<div id="deletewrapper">
+							<b> <button id="delete" onclick="deleteTAS()"> Remove TAS from queue </button> </b>
+						</div>
 					</div>
 					<div id="deletionMessage" class="hide"> TAS "<b><span id="deletedFilename">unknown</span></b>" has been removed from the queue.</div>
 					<div id="loadwrapper" class="hide">
