@@ -1,6 +1,7 @@
 const fs = require("fs");
 
 const consts = require(process.env.DOCUMENT_ROOT + "/private/consts.js");
+const utils = require(process.env.DOCUMENT_ROOT + "/private/utils.js");
 
 class M64 {
 	constructor (filename, data) {
@@ -57,36 +58,34 @@ class M64 {
 	}
 }
 
-module.exports = (() => {
-	const queue = require(process.env.DOCUMENT_ROOT + "/private/m64/queue.js");
+const queue = require(process.env.DOCUMENT_ROOT + "/private/m64/queue.js");
 
-	let counter = 0;
+let counter = 0;
 
-	return function processM64 (filename, data) {
-		if (!data) {
-			return { res: "nofile" };
-		}
+module.exports = function processM64 (filename, data) {
+	if (!data) {
+		return { res: "nofile" };
+	}
 
-		let m64 = new M64(filename, data);
+	let m64 = new M64(filename, data);
 
-		if (!m64.valid) {
-			return { res: "invalid" };
-		}
+	if (!m64.valid) {
+		return { res: "invalid" };
+	}
 
-		if (m64.approxLength > consts.maxTASLength) {
-			return { res: "toolarge" };
-		}
+	if (m64.approxLength > consts.maxTASLength) {
+		return { res: "toolarge" };
+	}
 
-		let json = JSON.stringify(m64);
+	let json = JSON.stringify(m64);
 
-		let id = utils.getUniqueId(filename).replace(/[-_]/g, "").slice(0, 16);
+	let id = utils.getUniqueId(filename).replace(/[-_]/g, "").slice(0, 16);
 
-		let tempName = queue.resolveID(id);
+	let tempName = queue.resolveID(id);
 
-		utils.createSafeFileOp(fs.writeFileSync)(process.env.DOCUMENT_ROOT + tempName, json);
+	utils.createSafeFileOp(fs.writeFileSync)(process.env.DOCUMENT_ROOT + tempName, json);
 
-		let queuePos = queue.queueM64(tempName);
+	let queuePos = queue.queueM64(tempName);
 
-		return { res: "success", pos: queuePos, id: id };
-	};
-})();
+	return { res: "success", pos: queuePos, id: id };
+};

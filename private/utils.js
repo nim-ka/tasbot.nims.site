@@ -2,7 +2,9 @@ const crypto = require("crypto");
 const fs = require("fs");
 const lockfile = require("lockfile");
 
-module.exports = utils = {
+const utils = {};
+
+module.exports = Object.assign(utils, {
 	once: (func) => (() => {
 		let ran = false;
 		return (...args) => ran ? undefined : (ran = true, func(...args));
@@ -34,4 +36,4 @@ module.exports = utils = {
 	readJSONSafe: (path) => utils.createSafeFileOp(utils.readJSONUnsafe)(path),
 	writeJSONUnsafe: (path, data) => fs.writeFileSync(path, JSON.stringify(data)),
 	writeJSONSafe: (path, data) => utils.createSafeFileOp(utils.writeJSONUnsafe)(path, data),
-};
+});

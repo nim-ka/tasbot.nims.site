@@ -1,4 +1,4 @@
-module.exports = consts = {
+module.exports = {
 	debug: false,
 	maxFileUploadSize: 0x400 + 12 * 60 * 60 * 30 * 4,
 	maxTASLength: 4 * 60 * 60,
