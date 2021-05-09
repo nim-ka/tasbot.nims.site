@@ -7,6 +7,7 @@ const Bottleneck = require("bottleneck");
 const consts = require(process.env.DOCUMENT_ROOT + "/private/consts.js");
 const utils = require(process.env.DOCUMENT_ROOT + "/private/utils.js");
 const queue = require(process.env.DOCUMENT_ROOT + "/private/m64/queue.js");
+const promotions = require(process.env.DOCUMENT_ROOT + "/private/m64/promotions.js");
 
 const limiter = new Bottleneck(consts.bottleneckParams);
 
@@ -89,8 +90,25 @@ function apiCall (params) {
 
 				sendCGI(200, {
 					deleted: true,
-					deletedFilename: filename.length > 16 ? filename.slice(0, 16) + "..." : filename
+					deletedFilename: filename.length > 20 ? filename.slice(0, 17) + "..." : filename
 				});
+			}
+
+			break;
+		case "promote":
+			if (!params.key) {
+				sendCGI(403, { errorMessage: "No promotion key" });
+				return;
+			}
+
+			if (promotions.promote(params.key, res)) {
+				sendCGI(200, {
+					promoted: true,
+					promotedFilename: filename.length > 20 ? filename.slice(0, 17) + "..." : filename,
+					queuePos: queue.getPos(res)
+				});
+			} else {
+				sendCGI(403, { errorMessage: "Invalid promotion key" });
 			}
 
 			break;

@@ -13,10 +13,8 @@ module.exports = Object.assign(utils, {
 		.replace(/\+/g, "-")
 		.replace(/\//g, "_")
 		.replace(/=/g, ""),
-	getUniqueId: (() => {
-		let counter = 0;
-		return (str) => utils.hash(new Date().toString() + (counter++).toString() + (str || ""));
-	})(),
+	getUniqueId: () => utils.hash(crypto.randomBytes(2048)),
+	getUserFriendlyUniqueId: () => utils.getUniqueId().replace(/[-_]/g, "").slice(0, 16),
 	createSafeFileOp: (operation) => (path, ...args) => {
 		let lockPath = process.env.DOCUMENT_ROOT + "/private/locks/" + utils.hash(path) + ".lock";
 		let res;

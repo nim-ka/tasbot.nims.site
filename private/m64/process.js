@@ -79,7 +79,7 @@ module.exports = function processM64 (filename, data) {
 
 	let json = JSON.stringify(m64);
 
-	let id = utils.getUniqueId(filename).replace(/[-_]/g, "").slice(0, 16);
+	let id = utils.getUserFriendlyUniqueId();
 
 	let tempName = queue.resolveID(id);
 

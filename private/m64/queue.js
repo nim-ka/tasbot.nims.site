@@ -27,7 +27,7 @@ module.exports = Object.assign(queue, {
 			let queueData = utils.readJSONUnsafe(queue.queueFile);
 			let idx = queueData.indexOf(res);
 
-			if (idx >= 0 && idx < queueData.length) {
+			if (idx != -1) {
 				queueData.splice(queueData.indexOf(res), 1);
 				utils.writeJSONUnsafe(queue.queueFile, queueData);
 			}
@@ -36,21 +36,21 @@ module.exports = Object.assign(queue, {
 		utils.createSafeFileOp(fs.unlinkSync)(queue.realPath(res));
 	},
 	getSize: () => {
-		let res;
+		let result;
 
 		utils.createSafeFileOp(() => {
-			res = utils.readJSONUnsafe(queue.queueFile).length;
+			result = utils.readJSONUnsafe(queue.queueFile).length;
 		})(queue.queueFile);
 
-		return res;
+		return result;
 	},
 	shift: () => {
 		let queueEmpty;
-		let res;
+		let result;
 
 		utils.createSafeFileOp(() => {
 			let queueData = utils.readJSONUnsafe(queue.queueFile);
-			res = queueData[0];
+			result = queueData[0];
 
 			queueData.splice(0, 1);
 			queueEmpty = queueData.length == 0;
@@ -58,10 +58,25 @@ module.exports = Object.assign(queue, {
 			utils.writeJSONUnsafe(queue.queueFile, queueData);
 		})(queue.queueFile);
 
-		if (res) {
+		if (result) {
 			utils.createSafeFileOp(fs.unlinkSync)(queue.realPath(res));
 		}
 
 		return queueEmpty;
 	},
+	promote: (res) => {
+		utils.createSafeFileOp(() => {
+			let queueData = utils.readJSONUnsafe(queue.queueFile);
+			let idx = queueData.indexOf(res);
+
+			if (idx == 0) {
+				return;
+			}
+
+			queueData.splice(idx, 1);
+			queueData.splice(idx - 1, 0, res);
+
+			utils.writeJSONUnsafe(queue.queueFile, queueData);
+		})(queue.queueFile);
+	}
 });

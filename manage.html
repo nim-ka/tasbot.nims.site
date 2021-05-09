@@ -65,7 +65,9 @@
 				utils.hideDiv("error");
 				utils.hideDiv("response");
 				utils.hideDiv("deletionMessage");
+				utils.hideDiv("promotionMessage");
 				utils.unhideDiv("deletewrapper");
+				utils.unhideDiv("promotewrapper");
 				utils.unhideDiv("loadwrapper");
 
 				ajax.postJSON("/api/management", data, callback);
@@ -91,10 +93,18 @@
 
 						if (xhr.response.queuePos == 1) {
 							utils.hideDiv("deletewrapper");
+							utils.hideDiv("promotewrapper");
+						}
+
+						if (xhr.response.promoted) {
+							utils.unhideDiv("promotionMessage");
+						} else {
+							utils.unhideDiv("response");
 						}
 
 						if (xhr.response.deleted) {
 							utils.unhideDiv("deletionMessage");
+							utils.hideDiv("response");
 						} else {
 							utils.unhideDiv("response");
 						}
@@ -121,6 +131,18 @@
 					id: document.getElementById("id").value
 				}, showStatus);
 			}
+
+			function promoteTAS () {
+				alert("This feature is WIP.");
+
+				/*
+					doTASRequest({
+						action: "promote",
+						id: document.getElementById("id").value,
+						key: window.promotionKey || "" // Not implemented, for testing
+					}, showStatus);
+				*/
+			}
 		</script>
 	</head>
 	<body>
@@ -139,23 +161,37 @@
 					<span> Enter your TAS's ID here: </span>
 					<input id="id" type="text" placeholder="CTQcFhkSLywcLT4S" />
 					<button onclick="loadTAS()"> <b> Check TAS </b> </button>
-					<br /> <br />
+					<br />
 					<div id="error" class="hide">
+						<br />
 						<b> There was an error attempting to check your TAS. <br />
 						Did you enter the correct ID? <br />
 						<br />
 						Error Message: <span id="errorMessage">unknown</span> </b>
 					</div>
 					<div id="response" class="hide">
+						<br />
 						TAS Name: <b> <span id="filename"> unknown </span> </b> <br />
 						Position in queue: #<b><span id="queuePos">unknown</span></b> <br />
-						<br />
 						<div id="deletewrapper">
+							<br />
 							<b> <button id="delete" onclick="deleteTAS()"> Remove TAS from queue </button> </b>
 						</div>
+						<div id="promotewrapper">
+							<br />
+							<b> <button id="promote" onclick="promoteTAS()"> Move TAS up in queue </button> </b>
+						</div>
 					</div>
-					<div id="deletionMessage" class="hide"> TAS "<b><span id="deletedFilename">unknown</span></b>" has been removed from the queue.</div>
+					<div id="deletionMessage" class="hide">
+						<br />
+						TAS "<b><span id="deletedFilename">unknown</span></b>" has been removed from the queue.
+					</div>
+					<div id="promotionMessage" class="hide">
+						<br />
+						TAS "<b><span id="promotedFilename">unknown</span></b>" has been moved up in the queue!
+					</div>
 					<div id="loadwrapper" class="hide">
+						<br />
 						<div class="loading">
 							<div id="loadcircle1"> </div>
 							<div class="loadspace"> </div>
