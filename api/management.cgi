@@ -2,10 +2,13 @@
 
 const multipart = require("parse-multipart");
 const querystring = require("querystring");
+const Bottleneck = require("bottleneck");
 
 const consts = require(process.env.DOCUMENT_ROOT + "/private/consts.js");
 const utils = require(process.env.DOCUMENT_ROOT + "/private/utils.js");
 const queue = require(process.env.DOCUMENT_ROOT + "/private/m64/queue.js");
+
+const limiter = new Bottleneck(consts.bottleneckParams);
 
 const ctx = require(process.env.DOCUMENT_ROOT + "/assets/js/site.cgi");
 
@@ -33,28 +36,38 @@ if (!type || !type.includes("boundary")) {
 				params[part.filename] = part.data.toString();
 			}
 
-			if (params.action == "shift") {
-				if (params.auth && utils.hash(params.auth) == consts.tasbotKey) {
-					sendCGI(200, {
-						queueEmpty: queue.shift()
-					});
-				} else {
-					sendCGI(401, { errorMessage: "Unauthorized to perform action" });
-				}
-			} else {
-				let res = queue.resolveID(params.id);
-
-				if (queue.verifyResolvedID(res)) {
-					apiCall(res, params);
-				} else {
-					sendCGI(403, { errorMessage: "Invalid ID" });
-				}
-			}
+			limiter.wrap(apiCall)(params);
 		}
 	});
 }
 
-function apiCall (res, params) {
+function apiCall (params) {
+	if (params.action == "shift") {
+		if (params.auth && utils.hash(params.auth) == consts.tasbotKey) {
+			if (queue.getSize() == 0) {
+				sendCGI(400, { errorMessage: "Queue is empty" });
+			} else {
+				sendCGI(200, { queueEmpty: queue.shift() });
+			}
+		} else {
+			sendCGI(401, { errorMessage: "Unauthorized to perform action" });
+		}
+
+		return;
+	}
+
+	if (!params.id) {
+		sendCGI(403, { errorMessage: "No ID" });
+		return;
+	}
+
+	const res = queue.resolveID(params.id);
+
+	if (!queue.verifyResolvedID(res)) {
+		sendCGI(403, { errorMessage: "Invalid ID" });
+		return;
+	}
+
 	const tas = queue.readTAS(res);
 
 	let filename = tas.filename;

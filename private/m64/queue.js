@@ -35,6 +35,15 @@ module.exports = Object.assign(queue, {
 
 		utils.createSafeFileOp(fs.unlinkSync)(queue.realPath(res));
 	},
+	getSize: () => {
+		let res;
+
+		utils.createSafeFileOp(() => {
+			res = utils.readJSONUnsafe(queue.queueFile).length;
+		})(queue.queueFile);
+
+		return res;
+	},
 	shift: () => {
 		let queueEmpty;
 		let res;
