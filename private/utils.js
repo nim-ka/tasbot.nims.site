@@ -15,6 +15,14 @@ module.exports = Object.assign(utils, {
 		.replace(/=/g, ""),
 	getUniqueId: () => utils.hash(crypto.randomBytes(2048)),
 	getUserFriendlyUniqueId: () => utils.getUniqueId().replace(/[-_]/g, "").slice(0, 16),
+	hashSalted: (str) => {
+		let salt = utils.getUniqueId();
+		return utils.hash(str + salt) + "$" + salt;
+	},
+	verifyHashSalted: (str, hashSalt) => {
+		let [hash, salt] = hashSalt.split("$");
+		return utils.hash(str + salt) == hash;
+	},
 	createSafeFileOp: (operation) => (path, ...args) => {
 		let lockPath = process.env.DOCUMENT_ROOT + "/private/locks/" + utils.hash(path) + ".lock";
 		let res;

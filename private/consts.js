@@ -1,8 +1,8 @@
 module.exports = {
 	debug: false,
-	maxFileUploadSize: 0x400 + 12 * 60 * 60 * 30 * 4,
+	maxFileUploadSize: 0x400 + 72 * 60 * 60 * 30 * 4,
 	maxTASLength: 4 * 60 * 60,
-	tasbotKey: "66WUm0YhUEtbGmo3u9E8myKNfyTNh3-1ksPu_G7Kv6E",
+	tasbotKey: "Xq6SQuTAE4kw_NyNC9UGmfZ4kGZjkz_xnm0mIpZteNg$yn3rOjJ3UDdCWA9QgImxJ_OdxWqxPodx4yYRzIWd9lo",
 	bottleneckParams: {
 		maxConcurrent: 1,
 		minTime: 1000

@@ -1,6 +1,6 @@
 #!/var/www/html/nim/private/node-wrapper.sh
 
-const multipart = require("parse-multipart");
+const Busboy = require("busboy");
 const querystring = require("querystring");
 const Bottleneck = require("bottleneck");
 
@@ -30,21 +30,32 @@ if (!type || !type.includes("boundary")) {
 		if (!res) {
 			sendCGI(413, { errorMessage: "Request too large" });
 		} else {
-			const parts = multipart.Parse(ctx.stdin, multipart.getBoundary(type));
+			const busboy = new Busboy({
+				headers: {
+					"content-type": ctx.content.type,
+					"content-length": ctx.content.length
+				}
+			});
+
 			let params = {};
+console.error(ctx.stdin.toString());
 
-			for (let part of parts) {
-				params[part.filename] = part.data.toString();
-			}
+			busboy.on("field", (field, val) => {
+				params[field] = val;
+			});
 
-			limiter.wrap(apiCall)(params);
+			busboy.on("finish", () => {
+				limiter.wrap(apiCall)(params);
+			});
+
+			busboy.end(ctx.stdin);
 		}
 	});
 }
 
 function apiCall (params) {
 	if (params.action == "shift") {
-		if (params.auth && utils.hash(params.auth) == consts.tasbotKey) {
+		if (params.auth && utils.verifyHashSalted(params.auth, consts.tasbotKey)) {
 			if (queue.getSize() == 0) {
 				sendCGI(400, { errorMessage: "Queue is empty" });
 			} else {

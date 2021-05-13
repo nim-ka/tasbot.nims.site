@@ -21,7 +21,8 @@ const ajax = {
 		let formData = new FormData();
 
 		for (let key in data) {
-			formData.append(key, new Blob([data[key].toString()], { type: "text/plain" }), key);
+			//formData.append(key, new Blob([data[key].toString()], { type: "text/plain" }), key);
+			formData.append(key, data[key]);
 		}
 
 		let xhr = new XMLHttpRequest();

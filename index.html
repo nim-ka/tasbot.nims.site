@@ -8,6 +8,10 @@
 
 		<style>
 			input {
+				font: inherit;
+			}
+
+			#m64 {
 				position: absolute;
 				width: 0.1px;
 				height: 0.1px;
@@ -24,14 +28,14 @@
 			function onLoad () {
 				let content = document.getElementById("content");
 				let form = document.getElementById("inputform");
-				let input = form.m64;
+				let m64 = form.m64;
 
 				content.ondragover = content.ondragenter = (evt) => evt.preventDefault();
 
 				let inputHandler = () => {
-					if (input.files.length == 1) {
+					if (m64.files.length == 1) {
 						utils.unhideDiv("submit");
-						utils.setText("filename", input.files[0].name);
+						utils.setText("filename", m64.files[0].name);
 					} else {
 						utils.hideDiv("submit");
 					}
@@ -39,12 +43,12 @@
 
 				content.ondrop = (evt) =>
 					((evt.dataTransfer.files.length == 1 ?
-						inputHandler(input.files = evt.dataTransfer.files) :
+						inputHandler(m64.files = evt.dataTransfer.files) :
 						alert("Only one file may be uploaded at a time.")),
 					evt.preventDefault());
 
-				input.oninput = inputHandler;
-				input.onchange = inputHandler;
+				m64.oninput = inputHandler;
+				m64.onchange = inputHandler;
 			}
 		</script>
 	</head>
@@ -66,7 +70,10 @@
 						<input type="file" name="m64" id="m64" accept=".m64" />
 						<label for="m64" class="button"> <b> select a file. </b> </label>
 						<br /> <br />
+						<span> If you have a passcode, enter it here: </span>
+						<input type="password" name="password" id="password" size="16" />
 						<div id="submit" class="hide">
+							<br />
 							<span> Selected: <b> <span id="filename"> </span> </b> </span> <br />
 							<div class="smalldivider"> </div>
 							<button type="submit" form="inputform"> <b> Upload TAS </b> </label>

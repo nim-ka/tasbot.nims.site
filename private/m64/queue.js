@@ -59,7 +59,7 @@ module.exports = Object.assign(queue, {
 		})(queue.queueFile);
 
 		if (result) {
-			utils.createSafeFileOp(fs.unlinkSync)(queue.realPath(res));
+			utils.createSafeFileOp(fs.unlinkSync)(queue.realPath(result));
 		}
 
 		return queueEmpty;

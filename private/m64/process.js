@@ -73,7 +73,7 @@ module.exports = function processM64 (filename, data) {
 		return { res: "invalid" };
 	}
 
-	if (m64.approxLength > consts.maxTASLength) {
+	if (!data.trusted && m64.approxLength > consts.maxTASLength) {
 		return { res: "toolarge" };
 	}
 

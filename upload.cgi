@@ -1,12 +1,14 @@
 #!/var/www/html/nim/private/node-wrapper.sh
 
-const multipart = require("parse-multipart");
+const Busboy = require("busboy");
 const querystring = require("querystring");
 
 const utils = require(process.env.DOCUMENT_ROOT + "/private/utils.js");
 const processM64 = require(process.env.DOCUMENT_ROOT + "/private/m64/process.js");
 
 const ctx = require(process.env.DOCUMENT_ROOT + "/assets/js/site.cgi");
+
+const credentials = require(process.env.DOCUMENT_ROOT + "/private/credentials.json");
 
 let redirect = utils.once((uri) => {
 	console.log("Status: 301");
@@ -22,7 +24,7 @@ const type = ctx.content.type;
 
 if (!type || !type.includes("boundary")) {
 	console.error("No form submitted");
-	redirect("/");
+	redirect("/complete?res=error");
 } else if (ctx.content.length > ctx.maxReadLength) {
 	redirect("/complete?res=toolarge");
 } else {
@@ -31,10 +33,61 @@ if (!type || !type.includes("boundary")) {
 	ctx.initStdin((res) => {
 		if (!res) {
 			redirect("/complete?res=toolarge");
-		} else {
-			const parts = multipart.Parse(ctx.stdin, multipart.getBoundary(type));
-
-			redirect("/complete?" + querystring.stringify(processM64(parts[0].filename, parts[0].data)));
+			return;
 		}
+
+		const busboy = new Busboy({
+			headers: {
+				"content-type": ctx.content.type,
+				"content-length": ctx.content.length
+			}
+		});
+
+		let filename;
+		let data;
+		let password;
+
+		busboy.on("file", (field, file, name) => {
+			if (field == "m64") {
+				filename = name;
+
+				let chunks = [];
+
+				file.on("data", (data) => {
+					chunks.push(data);
+				});
+
+				file.on("end", () => {
+					data = Buffer.concat(chunks);
+				});
+			}
+		});
+
+		busboy.on("field", (field, val) => {
+			if (field == "password") {
+				password = val;
+			}
+		});
+
+		busboy.on("finish", () => {
+			let auth = false;
+
+			if (password) {
+				for (let i = 0; i < credentials.length; i++) {
+					if (utils.verifyHashSalted(password, credentials[i])) {
+						auth = true;
+					}
+				}
+
+				if (!auth) {
+					redirect("/complete?res=unauth");
+					return;
+				}
+			}
+
+			redirect("/complete?" + querystring.stringify(processM64(filename, data)));
+		});
+
+		busboy.end(ctx.stdin);
 	});
 }
