@@ -133,15 +133,15 @@
 			}
 
 			function promoteTAS () {
-				alert("This feature is WIP.");
-
-				/*
+				if (consts.debug) {
 					doTASRequest({
 						action: "promote",
 						id: document.getElementById("id").value,
 						key: window.promotionKey || "" // Not implemented, for testing
 					}, showStatus);
-				*/
+				} else {
+					alert("This feature is WIP.");
+				}
 			}
 		</script>
 	</head>
